@@ -1,54 +1,82 @@
-/* Sorry the CSS is such a mess. -DS */
+/* ORBES Camera Control - DJI-inspired design */
+/* Based on dashboard.orbes.space visual style */
+
+/* ============= CSS VARIABLES ================== */
+:root {
+    /* ORBES Brand Colors */
+    --orbes-primary: #151F36;
+    --orbes-accent: #B7BCFF;
+    --orbes-violet: #4F498F;
+    --orbes-blue-violet: #5E70B7;
+    --orbes-alert: #FCDC5D;
+    
+    /* Dark Theme (default) */
+    --bg-default: #0F1419;
+    --bg-card: #151F36;
+    --bg-elevated: #1A2332;
+    --bg-input: #1A2332;
+    --text-default: #F5F8FF;
+    --text-muted: #9BA3B8;
+    --border-default: #2A3548;
+    --border-active: var(--orbes-accent);
+    
+    /* Status Colors */
+    --color-success: #00C853;
+    --color-warning: var(--orbes-alert);
+    --color-danger: #ff4d6d;
+    --color-record: #ff3b30;
+}
 
 /* ============= WHOLE PAGE STYLES ================== */
+
+@font-face {
+    font-family: 'Inter';
+    src: local('Inter'), local('Inter-Regular');
+    font-weight: 100 900;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg-default);
+    color: var(--text-default);
+    font-size: 14px;
+    line-height: 1.5;
+}
 
 /* Handle vertical screens */
 @media screen and (max-width: 1400px) and (orientation: portrait) {
     #cameraControlsContainer {
-        width: 100vw!important;
+        width: 100vw !important;
     }
-
     #cameraControlsContainerExpanded {
-        display: none!important;
+        display: none !important;
     }
-
     body {
-        font-size: 125%;
+        font-size: 16px;
     }
 }
 
 @media screen and (max-width: 1400px) and (orientation: landscape) {
     #cameraControlsContainer {
-        width: 30vw!important;
+        width: 30vw !important;
     }
-
     #headerContainer {
-        height: 5vh!important;
+        height: 5vh !important;
     }
-    
     body {
-        font-size: 70%;
+        font-size: 12px;
     }
-}
-
-/* Load NotoSansDisplay Font from resources */
-@font-face {
-    font-family: 'NotoSansDisplay';
-    src: url('resources/NotoSansDisplay-VariableFont_wdth\,wght.woff') format('woff'), /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-         url('resources/NotoSansDisplay-VariableFont_wdth\,wght.ttf') format('truetype'); /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
 }
 
 .dNone {
     display: none;
-}
-
-body {
-    font-family: 'NotoSansDisplay', sans-serif;
-    font-weight: 100;
-    margin: 0px;
-    overflow: hidden;
-    background: #181818;
-    color: white;
 }
 
 /* Page Body Flexboxes */
@@ -60,411 +88,575 @@ body {
     display: inline-flex;
 }
 
-/* Inputs */
+/* ============= INPUTS ================== */
 
-input[type=text] {
-    border-radius: 0.5vh;
-    background: rgb(30, 30, 30);
-    color: white;
-    height: 2em;
-    width: 10vw;
-    border: 1px solid rgb(20, 20, 20);
+input[type=text],
+input[type=number] {
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-default);
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-default);
     text-align: center;
-    font-family: 'NotoSansDisplay', sans-serif;
+    font-family: inherit;
+    font-size: 13px;
     outline: none;
-    margin: 0px 0.5vw;
+    transition: all 0.2s ease;
 }
 
-input[type=text]:focus {
-    border: 1px solid rgb(150, 58, 0);
+input[type=text] {
+    width: 180px;
 }
 
 input[type=number] {
-    border-radius: 0.5vh;
-    background: rgb(30, 30, 30);
-    color: white;
-    height: 2em;
-    width: 4.666vw;
-    border: 1px solid rgb(20, 20, 20);
-    text-align: center;
-    font-family: 'NotoSansDisplay', sans-serif;
-    outline: none;
+    width: 80px;
 }
 
+input[type=text]:focus,
 input[type=number]:focus {
-    border: 1px solid rgb(150, 58, 0);
+    border-color: var(--orbes-accent);
+    box-shadow: 0 0 0 3px rgba(183, 188, 255, 0.15);
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-track {
+    background: var(--border-default);
+    height: 4px;
+    border-radius: 2px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--orbes-accent);
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    margin-top: -6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
 }
 
 input[type=range][orient=vertical] {
-    writing-mode: vertical-lr; direction: rtl;
-    width: 2vw;
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 32px;
     height: 80%;
 }
 
 select {
-    border-radius: 0.5vh;
-    background: rgb(30, 30, 30);
-    color: white;
-    height: 2em;
-    width: 5vw;
-    border: 1px solid rgb(20, 20, 20);
-    text-align: center;
-    font-family: 'NotoSansDisplay', sans-serif;
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-default);
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-default);
+    font-family: inherit;
+    font-size: 13px;
     outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 select:focus {
-    border: 1px solid rgb(150, 58, 0);
+    border-color: var(--orbes-accent);
+    box-shadow: 0 0 0 3px rgba(183, 188, 255, 0.15);
 }
 
+/* ============= BUTTONS ================== */
+
 button {
-    font-family: 'NotoSansDisplay', sans-serif;
-    background: #181818;
-    background: linear-gradient(0deg, #232323 0%, #404040 100%);
-    border: 0.3vh solid black;
-    outline: 0.3vh solid #404040;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--orbes-blue-violet);
+    border: none;
     color: white;
-    height: fit-content;
-    width: fit-content;
-    border-radius: 0.4em;
-    padding: 0.5vh 1vw;
-    margin: 1vh;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 button:hover {
-    background: #313131;
-    background: linear-gradient(0deg, #313131 0%, #4d4d4d 100%);
+    background: var(--orbes-violet);
+    transform: translateY(-1px);
 }
 
 button:active {
-    background: #181818;
-    box-shadow: inset 0 0 1em #090909;
+    background: var(--orbes-primary);
+    transform: translateY(0);
 }
 
-input[type=file]:focus {
-    border: 1px solid rgb(150, 58, 0);
+.circleButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 16px;
+    background: var(--bg-elevated);
+    border: 2px solid var(--border-default);
+    color: var(--text-muted);
 }
 
-#secureCheckboxLabel {
-    margin-right: 1vw;
+.circleButton:hover {
+    background: var(--orbes-blue-violet);
+    border-color: var(--orbes-blue-violet);
+    color: white;
+    transform: scale(1.05);
 }
 
-/* Horizontal Container Styles */
+.circleButton:active,
+.circleButton.activated {
+    background: var(--orbes-accent);
+    border-color: var(--orbes-accent);
+    color: var(--orbes-primary);
+}
+
+/* ============= HEADER ================== */
+
 #headerContainer {
-    background: #181818;
-    background: linear-gradient(0deg, #181818 0%, #303030 100%);
-    border-bottom: 1px solid black;
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-default) 100%);
+    border-bottom: 1px solid var(--border-default);
     width: 100%;
-    height: 7.77vh;
-    flex-wrap: wrap;
-    align-content: center;
+    height: 60px;
+    align-items: center;
+    padding: 0 24px;
 }
 
 #headerContainer h1 {
-    color: white;
-    margin-left: 1.3vw;
-    font-weight: 100;
+    color: var(--text-default);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
 }
+
+/* ============= CAMERA SELECT BAR ================== */
 
 #cameraSelectContainer {
-    background: #222222;
-    border: 1px solid black;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-default);
     width: 100%;
-    height: 3.53vh;
-    color: #474747;
-    font-size: 1em;
+    height: 44px;
     align-items: center;
     justify-content: center;
-}
-
-#cameraSelectContainer span {
-    height: fit-content;
-}
-
-#cameraSelectContainer .camSelectSeparator {
-    margin: 0px 0.5em;
+    gap: 8px;
 }
 
 .cameraSwitchLabel a {
     text-decoration: none;
-    color: #474747;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.cameraSwitchLabel a:hover {
+    background: var(--bg-elevated);
+    color: var(--text-default);
 }
 
 .cameraSwitchLabel.selectedCam a {
-    color: #e66c01;
+    background: var(--orbes-accent);
+    color: var(--orbes-primary);
 }
+
+.camSelectSeparator {
+    color: var(--border-default);
+    display: none;
+}
+
+/* ============= MAIN CONTAINER ================== */
 
 #allCamerasContainer {
     width: 100%;
-    height: 83.1vh;
-    
-    overflow-x: scroll;
+    height: calc(100vh - 160px);
+    overflow-x: auto;
     overflow-y: hidden;
-
-    scrollbar-color: #202020 #151515;
+    scrollbar-color: var(--border-default) transparent;
 }
 
-#formatDisplay span {
-    margin: 0px 1em;
-}
+/* ============= CAMERA CONTROLS PANEL ================== */
 
-#footerContainer {
-    background: #181818;
-    background: linear-gradient(0deg, #181818 0%, #303030 100%);
-    border: 1px solid black;
-    width: 100%;
-    height: 5vh;
-    position: fixed;
-    bottom: 0;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#footerContainer button {
-    padding: 0.4em 0.8em;
-    font-size: x-small;
-}
-
-#refreshingText.refreshing {
-    color: #606060ff;
-}
-
-#refreshingText {
-    color: #60606000;
-}
-
-#footerLinks span {
-    margin-right: 1.25vw;
-}
-
-#footerLeft span {
-    margin-left: 1.25vw;
-}
-
-#footerLinks a {
-    text-decoration: none;
-    color: #e66c01;
-}
-
-/* Camera Controls Container */
 #cameraControlsContainer {
-    width: 15vw;
+    width: 280px;
+    min-width: 280px;
     height: 100%;
-    background: #282828;
+    background: var(--bg-card);
     flex-direction: column;
-    border: 1px solid black;
-    flex-shrink: 0;
-}
-
-.liveCam {
-    background: rgb(184,3,16);
-    background: linear-gradient(90deg, rgba(184,3,16,1) 0%, rgba(255,0,19,1) 15%, rgba(255,0,19,1) 85%, rgba(184,3,16,1) 100%);
+    border-right: 1px solid var(--border-default);
 }
 
 #cameraControlHeadContainer {
     width: 100%;
-    height: 5vh;
-    border-bottom: 2px solid black;
+    height: 48px;
+    border-bottom: 1px solid var(--border-default);
     align-items: center;
-    color: white;
+    padding: 0 16px;
+    background: var(--bg-elevated);
+}
+
+#cameraControlHeadContainer.liveCam {
+    background: linear-gradient(90deg, var(--color-record) 0%, #ff6b5b 100%);
 }
 
 h2 {
-    margin-inline-start: 0.6em;
-    margin-inline-end: 0.6em;
-    font-weight: 100;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
 }
 
-#cameraName {
-    
-}
+/* ============= COLOR CORRECTION ================== */
 
-/* Color Correction Section */
 #cameraControlColorCorrectionContainer {
     width: 100%;
-    height: 33vh;
+    padding: 16px;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-default);
 }
 
-#cameraControlLGGTabs {
-    margin-top: 2vh;
-    border: 1px solid #101010;
-    border-radius: 2.5vh;
-    overflow: hidden;
-}
-
-
-#cameraControlLGGTabs a {
-    background: #181818;
-    background: linear-gradient(0deg, #181818 0%, #303030 100%);
-
-    padding: 0.1vh 1.25vw 0.25vh 1.25vw;
-
-    border-left: 1px solid #101010;
-    
-    text-decoration: none;
-    color: #474747;
-}
-
-#cameraControlLGGTabs a.selectedTab {
-    color: #e66c01;
-}
-
-.ccExposureSettingValueContainer .expAdjArr {
-    text-decoration: none;
-    color: #60606000;
-}
-
-.ccExposureSettingValueContainer:hover .expAdjArr {
-    color: #606060ff;
-}
-
-.ccExposureSettingValueContainer:hover .expAdjArr:hover {
-    color: #474747;
-}
-
-.ccExposureSettingValueContainer:hover .expAdjArr:active {
-    color: #e66c01;
+#cameraControlColorCorrectionContainer > span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
 }
 
 #cameraControlColorCorrectionBottomContainer {
-    margin-bottom: 1em;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    gap: 8px;
+    background: var(--bg-elevated);
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 100%;
+    justify-content: center;
 }
 
-#cameraControlColorCorrectionBottomContainer button {
-    margin: 0px 0.5em;
+#cameraControlColorCorrectionNumbersContainer {
+    display: flex;
+    gap: 8px;
 }
 
 #cameraControlColorCorrectionNumbersContainer span {
-    margin: 0px 0.5em;
-    text-decoration: underline 3px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Monaco', monospace;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--bg-input);
+    cursor: text;
 }
 
-/* Exposure Section */
+/* ============= EXPOSURE SECTION ================== */
+
 #cameraControlExposureContainer {
     width: 100%;
-    height: 4.7vh;
-    background-color: #171717;
-    border-top: 1px solid #2d2d2d;
-    border-bottom: 1px solid #2d2d2d;
-    display: inline-flex;
-    justify-content: space-evenly;
-    overflow: hidden;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 8px;
 }
 
 .ccExposureSettingContainer {
     display: flex;
-    color: white;
-    font-size: 0.86em;
     flex-direction: column;
-    align-content: center;
-    justify-content: center;
     align-items: center;
-    padding-bottom: 0.5vh;
-    padding-top: 0.25vh;
+    gap: 4px;
 }
 
 .exposureControlLabel {
-    color: #6e6e6e;
-    font-size: 0.666em;
-    display: block;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
-/* Lens Stuff */
+.ccExposureSettingValueContainer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ccExposureSettingValueContainer span {
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: center;
+}
+
+.expAdjArr {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ccExposureSettingValueContainer:hover .expAdjArr {
+    opacity: 1;
+}
+
+.expAdjArr:hover {
+    color: var(--orbes-accent);
+}
+
+/* ============= LENS CONTROLS ================== */
+
 #cameraControlLensContainer {
     width: 100%;
-    height: 41.9vh;
-    border-bottom: 1px solid black;
-    justify-content: space-evenly;
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+    padding: 16px;
+    gap: 8px;
 }
 
 .lensSliderContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 12px;
+    flex: 1;
 }
 
-.lensSliderContainer span {
-    margin-top: 1em;
-    margin-bottom: 1em;
+.lensSliderContainer > span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
 }
 
-.circleButton {
-    width: 2em;
-    height: 2em;
-    border-radius: 1em;
-    padding: 0;
-    margin: 1em 0;
+#apertureStopsLabel,
+#zoomMMLabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-default);
 }
 
-.activated {
-    background: #181818;
-    box-shadow: inset 0 0 1em #090909;
-}
+/* ============= EXPANDED CONTROLS PANEL ================== */
 
-#transportControls .circleButton {
-    margin: 0 0.5em;
-}
-
-/* Right side (expanded) */
 #cameraControlsContainerExpanded {
-    width: 84.75vw;
+    flex: 1;
     height: 100%;
-    background: #282828;
+    background: var(--bg-default);
     flex-direction: column;
-    border: 1px solid black;
-    flex-shrink: 0;
+    overflow-y: auto;
 }
 
 #cameraControlExpandedHeadContainer {
     width: 100%;
-    height: 5vh;
-    border-bottom: 2px solid black;
+    height: 56px;
+    border-bottom: 1px solid var(--border-default);
     align-items: center;
     justify-content: space-between;
+    padding: 0 24px;
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#cameraName {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+#formatDisplay {
+    display: flex;
+    gap: 16px;
+}
+
+#formatDisplay span {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+#transportControls {
+    display: flex;
+    gap: 8px;
+}
+
+#timecodeLabel {
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--orbes-accent);
+    margin: 0;
 }
 
 #cameraControlExpandedBodyContainer {
     flex-direction: column;
-    display: inline-flex;
-    height: inherit;
-    justify-content: space-around;
+    padding: 24px;
+    gap: 24px;
 }
 
-#timecodeLabel {
-    
-}
-
-#connectionErrorSpan {
-    color: #e64b3d;
-}
-
-#manualRequestResponseP {
-    color: #6e6e6e;
-}
-
-/* Table Controls */
+/* ============= TABLE CONTROLS ================== */
 
 .tableControl {
-    margin-left: 1.5vw;
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-default);
 }
 
 .tableControl h3 {
-    font-weight: 100;
-    margin: 0.5vh 0vw;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-default);
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-default);
 }
 
-table, td {
-    margin-left: 0.5vw;
-    /* border: 1px solid white; */
+table {
+    width: 100%;
     border-collapse: collapse;
-    padding: 0.1vw 1vw;
 }
 
-td, tr {
+td {
+    padding: 8px 0;
+    vertical-align: middle;
+}
+
+td:first-child {
+    color: var(--text-muted);
+    font-size: 13px;
+    width: 120px;
+}
+
+#connectionErrorSpan {
+    color: var(--color-danger);
+    font-size: 12px;
+}
+
+#manualRequestResponseP {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin: 8px 0 0 0;
+}
+
+#manualRequestResponseP a {
+    color: var(--orbes-accent);
+}
+
+#secureCheckboxLabel {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* ============= FOOTER ================== */
+
+#footerContainer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-default);
+    width: 100%;
+    height: 48px;
+    position: fixed;
+    bottom: 0;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+#footerContainer button {
+    height: 28px;
+    font-size: 11px;
+    padding: 0 12px;
+}
+
+#footerLeft span {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+#footerLinks {
+    display: flex;
+    gap: 24px;
+}
+
+#footerLinks a {
+    text-decoration: none;
+    color: var(--orbes-accent);
+    font-size: 12px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+#footerLinks a:hover {
+    opacity: 0.8;
+}
+
+#refreshingText {
+    color: transparent;
+    font-size: 11px;
+}
+
+#refreshingText.refreshing {
+    color: var(--text-muted);
+}
+
+/* ============= SCROLLBAR ================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--orbes-violet);
+}
+
+/* ============= RECORD BUTTON ================== */
+
+#transportControls .circleButton[title="Record"] {
+    color: var(--color-record) !important;
+}
+
+#transportControls .circleButton[title="Record"]:hover {
+    background: var(--color-record);
+    border-color: var(--color-record);
+    color: white !important;
 }

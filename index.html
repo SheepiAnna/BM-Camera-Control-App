@@ -4,10 +4,16 @@
 <html>
     <head>
         <!-- Page title and metadata -->
-        <title>Camera Control WebUI for Blackmagic Cameras</title>
+        <title>ORBES Camera Control</title>
         <meta charset="UTF-8">
-        <meta name="description" content="JS-based web interface for controlling Blackmagic Design cameras via the official REST API">
-        <meta name="author" content="Dylan Speiser">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Blackmagic camera control interface for Orbital Exploration Systems">
+        <meta name="author" content="Orbital Exploration Systems">
+        
+        <!-- Google Fonts - Inter -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Linking the stylesheet -->
         <link rel="stylesheet" href="style.css">
@@ -21,7 +27,7 @@
 
         <!-- Header Div -->
         <div class="flexContainerH" id="headerContainer" onclick="document.getElementById('footerContainer').style.display='flex'">
-            <h1>Camera Control WebUI for Blackmagic Cameras</h1>
+            <h1>ORBES Camera Control</h1>
         </div>
 
         <!-- Camera Select Bar -->
@@ -340,9 +346,10 @@
                 <span id="activeElementSpan"></span>
             </div>
             <div id="footerLinks">
-                <span><a id="documentationLink" href="#" target="_blank">YAML Documentation</a></span>
-                <span><a id="mediaManagerLink" href="#" target="_blank">Web Media Manager</a></span>
-                <span><a id="githubLink" href="https://github.com/DylanSpeiser/BM-Camera-Control-WebUI" target="_blank">GitHub</a></span>
+                <span><a id="documentationLink" href="#" target="_blank">API Docs</a></span>
+                <span><a id="mediaManagerLink" href="#" target="_blank">Media Manager</a></span>
+                <span><a href="https://dashboard.orbes.space" target="_blank">ORBES Dashboard</a></span>
+                <span><a id="githubLink" href="https://github.com/Orbital-Exploration-Systems/BM-Camera-Control-App" target="_blank">GitHub</a></span>
             </div>
         </div>
     </body>
