@@ -1,372 +1,296 @@
-<!-- (c) 2024 Dylan Speiser -->
-
 <!DOCTYPE html>
-<html>
-    <head>
-        <!-- Page title and metadata -->
-        <title>ORBES Camera Control</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Blackmagic camera control interface for Orbital Exploration Systems">
-        <meta name="author" content="Orbital Exploration Systems">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>ORBES Camera</title>
+    <meta name="description" content="Blackmagic camera control for Orbital Exploration Systems">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="bodyOnLoad()">
+    <script src="BMDevice.js"></script>
+    <script src="web-ui.js"></script>
+
+    <!-- Header -->
+    <header id="headerContainer">
+        <div class="orbes-logo">
+            <svg viewBox="0 0 70 51" fill="none">
+                <path d="M0 12C0 2.77 3.57 0 15.59 0C27.61 0 31.17 2.65 31.17 11.88C31.17 21.11 27.61 23.75 15.59 23.75C3.57 23.75 0 20.99 0 11.88V12Z" fill="#B7BCFF"/>
+                <path d="M34.5 12C34.5 2.77 38.07 0.14 50.09 0.14C62.11 0.14 65.68 2.78 65.68 12.01C65.68 21.24 62.11 23.89 50.09 23.89C38.07 23.89 34.5 21.12 34.5 12.01Z" fill="#B7BCFF"/>
+                <path d="M0 38.73C0 29.49 3.57 26.86 15.59 26.86C27.61 26.86 31.17 29.5 31.17 38.73C31.17 47.96 27.61 50.61 15.59 50.61C3.57 50.61 0 47.84 0 38.73Z" fill="#B7BCFF"/>
+                <path d="M34.5 38.73C34.5 29.49 38.07 26.86 50.09 26.86C62.11 26.86 65.68 29.5 65.68 38.73C65.68 47.96 62.11 50.61 50.09 50.61C38.07 50.61 34.5 47.84 34.5 38.73Z" fill="#B7BCFF"/>
+            </svg>
+        </div>
+        <h1 id="cameraName">Not Connected</h1>
+        <div id="statusDot" class="status-disconnected"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent">
         
-        <!-- Google Fonts - Inter -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-        <!-- Linking the stylesheet -->
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body onload="bodyOnLoad()">
-        <!-- JavaScript Linking -->
-        <script src="BMDevice.js"></script>
-        <script src="web-ui.js"></script>
-
-        <!------ Page Content ------>
-
-        <!-- Header Div -->
-        <div class="flexContainerH" id="headerContainer" onclick="document.getElementById('footerContainer').style.display='flex'">
-            <!-- ORBES Logo -->
-            <div class="orbes-logo">
-                <svg viewBox="0 0 467 51" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Logo dots -->
-                    <path d="M0 12C0 2.77 3.57 0 15.59 0C27.61 0 31.17 2.65 31.17 11.88C31.17 21.11 27.61 23.75 15.59 23.75C3.57 23.75 0 20.99 0 11.88V12Z" fill="#B7BCFF"/>
-                    <path d="M34.5 12C34.5 2.77 38.07 0.14 50.09 0.14C62.11 0.14 65.68 2.78 65.68 12.01C65.68 21.24 62.11 23.89 50.09 23.89C38.07 23.89 34.5 21.12 34.5 12.01Z" fill="#B7BCFF"/>
-                    <path d="M0 38.73C0 29.49 3.57 26.86 15.59 26.86C27.61 26.86 31.17 29.5 31.17 38.73C31.17 47.96 27.61 50.61 15.59 50.61C3.57 50.61 0 47.84 0 38.73Z" fill="#B7BCFF"/>
-                    <path d="M34.5 38.73C34.5 29.49 38.07 26.86 50.09 26.86C62.11 26.86 65.68 29.5 65.68 38.73C65.68 47.96 62.11 50.61 50.09 50.61C38.07 50.61 34.5 47.84 34.5 38.73Z" fill="#B7BCFF"/>
-                    <!-- ORBES text -->
-                    <path d="M158 40.3C155.1 44 150.8 46.6 145.1 48.2C139.5 49.8 132.5 50.6 124.2 50.6C115.9 50.6 109 49.8 103.3 48.2C97.6 46.6 93.3 44 90.4 40.3C87.5 36.6 86 31.6 86 25.4C86 19.2 87.5 14.2 90.4 10.5C93.3 6.8 97.6 4.1 103.3 2.5C109 0.9 115.9 0.2 124.2 0.2C132.4 0.2 139.5 1 145.1 2.5C150.8 4.1 155.1 6.8 158 10.5C160.9 14.2 162.3 19.2 162.3 25.4C162.3 31.7 160.9 36.6 158 40.3ZM150.4 23.8C150.4 18.5 148.2 14.8 143.8 12.6C139.4 10.3 132.9 9.2 124.2 9.2C115.5 9.2 109 10.3 104.6 12.6C100.2 14.8 98 18.5 98 23.8V26.9C98 30.5 99 33.4 101 35.5C103 37.7 105.9 39.2 109.7 40.1C113.6 41 118.5 41.5 124.2 41.5C129.9 41.5 134.8 41.1 138.7 40.1C142.6 39.2 145.5 37.7 147.4 35.6C149.4 33.4 150.4 30.5 150.4 26.9V23.8Z" fill="#FFFFFF"/>
-                    <path d="M220.8 31.8C230.8 31.8 234.6 28.9 236.7 26.3C238.7 23.8 239.8 20.5 239.8 16.4C239.8 11.4 238.3 7.6 235.1 5C232.1 2.3 227.7 1 222 1C222 1 188.9 1 175.8 1V49.4H188V32.2C188 32.2 201.4 31.9 212 38C220.6 42.9 224.9 49.4 224.9 49.4H242.5C235.1 40.3 225 33.6 220.8 31.8ZM227.6 16.9C227.6 19 227 20.7 225.9 21.8C224.6 23.1 222.4 23.7 219.3 23.7H187.9L187.9 9.6C199.5 8.7 212.5 8.3 220.2 8.9C223.3 9.1 224.6 9.9 225.9 11.1C227 12.2 227.6 13.9 227.6 15.9V16.9Z" fill="#FFFFFF"/>
-                    <path d="M313.8 46.1C311.1 48.5 307 49.7 301.5 49.7H256.1V1.1H300.4C305.5 1.1 309.4 2.1 312.1 4.1C314.7 6.1 316 9 316 12.8C316 15.1 315.6 17.1 314.6 18.9C313.7 20.7 312.1 22.1 309.8 23.2C307.6 24.2 304.6 24.7 300.8 24.7L301.6 23.1C305.3 23.1 308.4 23.6 310.8 24.6C313.2 25.5 314.9 26.9 316.1 28.8C317.3 30.7 317.8 32.9 317.8 35.4C317.8 40.1 316.5 43.6 313.8 46.1ZM302.2 9.9C301 9 299.3 8.5 296.8 8.5H268.1V21.1H296.8C299.3 21.1 301.1 20.6 302.2 19.5C303.4 18.5 303.9 17 303.9 15V14.1C303.9 12.2 303.4 10.8 302.2 9.9ZM303.9 30.1C302.6 29.1 300.6 28.6 298 28.6H268.1V42.2H298C300.5 42.2 302.5 41.7 303.8 40.6C305.2 39.5 305.8 37.9 305.8 35.6V34.4C305.8 32.6 305.2 31.1 303.9 30.1Z" fill="#FFFFFF"/>
-                    <path d="M332.7 49.7V1.1H388.7V9.8H344.7V20.9H378.4V29.1H344.7V40.9H389V49.7H332.7Z" fill="#FFFFFF"/>
-                    <path d="M463.3 43.7C461.2 46 457.7 47.8 452.9 48.9C448.1 50.1 441.9 50.6 434.1 50.6C428.3 50.6 423.3 50.3 419.2 49.7C415.1 49 411.8 48 409.1 46.7C406.5 45.4 404.4 43.7 402.9 41.6C401.4 39.6 400.4 37.3 399.9 34.6H412C412.9 36.6 414.3 38.1 416 39.2C417.7 40.3 420.1 41.1 423 41.5C425.9 41.9 429.6 42.1 434 42.1C438.9 42.1 442.9 41.9 445.9 41.4C448.9 40.9 451.1 40.2 452.5 39.2C453.9 38.2 454.5 37 454.5 35.6C454.5 34.1 453.9 33 452.7 32.2C451.6 31.4 449.9 30.8 447.8 30.5C445.7 30.2 443.3 29.9 440.7 29.8C438 29.7 435.2 29.6 432.2 29.6C429.2 29.5 426.2 29.3 423.2 29.2C420.3 29 417.4 28.6 414.8 28.1C412.1 27.6 409.7 26.9 407.7 25.9C405.6 24.9 404 23.5 402.7 21.8C401.5 20.2 400.9 18 400.9 15.4C400.9 11.9 402.2 8.9 404.7 6.7C407.3 4.4 411 2.7 415.8 1.7C420.6 0.7 426.5 0.1 433.4 0.1C440.2 0.1 445.9 0.7 450.5 1.8C455.2 2.8 458.7 4.5 461.2 6.9C463.7 9.2 465.3 12.3 465.9 16.1H453.7C453.2 14.1 452.1 12.6 450.4 11.5C448.6 10.5 446.3 9.7 443.4 9.3C440.6 8.8 437.2 8.6 433.4 8.6C428.6 8.6 424.8 8.8 421.8 9.2C418.7 9.6 416.5 10.3 415.1 11.2C413.6 12.1 412.9 13.4 412.9 15.1C412.9 16.4 413.5 17.5 414.8 18.2C416 19 417.6 19.5 419.7 19.8C421.8 20.1 424.1 20.3 426.8 20.4C429.4 20.5 432.3 20.6 435.3 20.6C438.2 20.7 441.2 20.8 444.2 21C447.2 21.2 450 21.5 452.7 22C455.4 22.4 457.8 23.2 459.8 24.2C461.9 25.2 463.5 26.6 464.8 28.3C466 30 466.6 32.2 466.6 34.8C466.6 38.3 465.5 41.3 463.3 43.7Z" fill="#FFFFFF"/>
-                </svg>
+        <!-- Connection Card -->
+        <section class="card" id="connectionCard">
+            <div class="card-header">
+                <span class="card-icon">📡</span>
+                <h2>Connect Camera</h2>
             </div>
-            <h1>Camera Control</h1>
-        </div>
-
-        <!-- Camera Select Bar -->
-        <div class="flexContainerH" id="cameraSelectContainer">
-            <span class="cameraSwitchLabel selectedCam"><a href="#" onclick="switchCamera(0)">CAM1</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(1)">CAM2</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(2)">CAM3</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(3)">CAM4</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(4)">CAM5</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(5)">CAM6</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(6)">CAM7</a></span>
-            <span class="camSelectSeparator">|</span>
-            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(7)">CAM8</a></span>
-        </div>
-
-        <!-- Camera Controls Box -->
-        <div class="flexContainerH" id="allCamerasContainer">
-            <div class="flexContainerV" id="cameraControlsContainer">
-                <div class="flexContainerH" id="cameraControlHeadContainer">
-                    <h2 id="cameraNumberLabel">CAM1</h2>
+            <div class="card-body">
+                <input type="text" id="hostnameInput" placeholder="Camera-Name.local" onclick="hostnameInputHandler()" onkeydown="hostnameInputHandler()">
+                <div class="row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="secureCheckbox">
+                        <span>HTTPS</span>
+                    </label>
+                    <button class="btn-primary" onclick="initCamera()">Connect</button>
                 </div>
+                <p id="connectionErrorSpan" class="error-text"></p>
+            </div>
+        </section>
 
-                <div class="flexContainerH" id="cameraControlColorCorrectionContainer">
-                    <!-- <div class="flexContainerH" id="cameraControlLGGTabs">
-                        <a href="#" class="ccTabLabel selectedTab" onclick="">Lift</a>
-                        <a href="#" class="ccTabLabel" onclick="">Gamma</a>
-                        <a href="#" class="ccTabLabel" onclick="">Gain</a>
-                    </div> -->
-                    <span style="margin-top: 0.5em;">Lift</span>
-                    <div class="flexContainerH" id="cameraControlColorCorrectionBottomContainer">
-                        <button class="CCResetButton circleButton" onclick="resetCC(0)" title="Reset Lift">&#10227</button>
-                        <div class="flexContainerH" id="cameraControlColorCorrectionNumbersContainer">
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #dbdbdb;" class="CClumaLabel" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #e64b3d;" class="CCredLabel" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #00a841;" class="CCgreenLabel" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #2a78c8;" class="CCblueLabel" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
-                        </div>
-                        <button id="CCHamburgerButton" class="circleButton" onclick="setCCFromUI(0)" title="Set Lift">&#10138</button>
-                    </div>
-
-                    <span>Gamma</span>
-                    <div class="flexContainerH" id="cameraControlColorCorrectionBottomContainer">
-                        <button class="CCResetButton circleButton" onclick="resetCC(1)" title="Reset Gamma">&#10227</button>
-                        <div class="flexContainerH" id="cameraControlColorCorrectionNumbersContainer">
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #dbdbdb;" class="CClumaLabel" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #e64b3d;" class="CCredLabel" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #00a841;" class="CCgreenLabel" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #2a78c8;" class="CCblueLabel" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
-                        </div>
-                        <button id="CCHamburgerButton" class="circleButton" onclick="setCCFromUI(1)" title="Set Gamma">&#10138</button>
-                    </div>
-
-                    <span>Gain</span>
-                    <div class="flexContainerH" id="cameraControlColorCorrectionBottomContainer">
-                        <button class="CCResetButton circleButton" onclick="resetCC(2)" title="Reset Gain">&#10227</button>
-                        <div class="flexContainerH" id="cameraControlColorCorrectionNumbersContainer">
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #dbdbdb;" class="CClumaLabel" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #e64b3d;" class="CCredLabel" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #00a841;" class="CCgreenLabel" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #2a78c8;" class="CCblueLabel" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
-                        </div>
-                        <button id="CCHamburgerButton" class="circleButton" onclick="setCCFromUI(2)" title="Set Gain">&#10138</button>
-                    </div>
-                    
-
-                    <span>Offset</span>
-                    <div class="flexContainerH" id="cameraControlColorCorrectionBottomContainer">
-                        <button class="CCResetButton circleButton" onclick="resetCC(3)" title="Reset Offset">&#10227</button>
-                        <div class="flexContainerH" id="cameraControlColorCorrectionNumbersContainer">
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #dbdbdb;" class="CClumaLabel" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #e64b3d;" class="CCredLabel" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #00a841;" class="CCgreenLabel" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
-                            <span contenteditable="plaintext-only" style="text-decoration-color: #2a78c8;" class="CCblueLabel" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
-                        </div>
-                        <button id="CCHamburgerButton" class="circleButton" onclick="setCCFromUI(4)" title="Set Offset">&#10138</button>
-                    </div>
+        <!-- Transport Controls -->
+        <section class="card" id="transportCard">
+            <div class="card-header">
+                <span class="card-icon">🎬</span>
+                <h2>Transport</h2>
+                <span id="timecodeLabel" class="timecode">00:00:00:00</span>
+            </div>
+            <div class="card-body">
+                <div class="transport-grid">
+                    <button class="transport-btn" onclick="cameras[ci].seek(false)" title="Previous">⏮</button>
+                    <button class="transport-btn" onclick="cameras[ci].stop()" title="Stop">⏹</button>
+                    <button class="transport-btn record-btn" onclick="cameras[ci].toggleRecord()" title="Record">⏺</button>
+                    <button class="transport-btn" onclick="cameras[ci].play()" title="Play">▶</button>
+                    <button class="transport-btn" onclick="cameras[ci].seek(true)" title="Next">⏭</button>
                 </div>
+                <div id="formatDisplay" class="format-row">
+                    <span id="formatCodec">--</span>
+                    <span id="formatResolution">--</span>
+                    <span id="formatFPS">--</span>
+                </div>
+            </div>
+        </section>
 
-                <div class="flexContainerH" id="cameraControlExposureContainer">
-                    <div class="ccExposureSettingContainer">
-                        <span class="exposureControlLabel">FILTER</span>
-                        <div class="ccExposureSettingValueContainer">
-                            <a class="expAdjArr" href="#" onclick="decreaseND()" id="NDL">&#9664</a>
-                            <span id="ndFilterSpan" contenteditable="plaintext-only" onkeydown="NDFilterInputHandler()" onmousedown="NDFilterInputHandler()">0</span>
-                            <a class="expAdjArr" href="#" onclick="increaseND()" id="NDR">&#9654</a>
+        <!-- Exposure Controls -->
+        <section class="card" id="exposureCard">
+            <div class="card-header">
+                <span class="card-icon">☀️</span>
+                <h2>Exposure</h2>
+                <button class="btn-small" onclick="cameras[ci].doAutoWhitebalance()">AWB</button>
+            </div>
+            <div class="card-body">
+                <div class="exposure-grid" id="cameraControlExposureContainer">
+                    <div class="exposure-item">
+                        <span class="exposure-label">ND</span>
+                        <div class="exposure-control">
+                            <button class="adj-btn" onclick="decreaseND()">−</button>
+                            <span id="ndFilterSpan" class="exposure-value" contenteditable="plaintext-only" onkeydown="NDFilterInputHandler()" onmousedown="NDFilterInputHandler()">0</span>
+                            <button class="adj-btn" onclick="increaseND()">+</button>
                         </div>
                     </div>
-                    <div class="ccExposureSettingContainer">
-                        <span class="exposureControlLabel">GAIN</span>
-                        <div class="ccExposureSettingValueContainer">
-                            <a class="expAdjArr" href="#" onclick="decreaseGain()" id="GAL">&#9664</a>
-                            <span id="gainSpan" contenteditable="plaintext-only" onkeydown="GainInputHandler()" onmousedown="GainInputHandler()">+0db</span>
-                            <a class="expAdjArr" href="#" onclick="increaseGain()" id="GAR">&#9654</a>
+                    <div class="exposure-item">
+                        <span class="exposure-label">GAIN</span>
+                        <div class="exposure-control">
+                            <button class="adj-btn" onclick="decreaseGain()">−</button>
+                            <span id="gainSpan" class="exposure-value" contenteditable="plaintext-only" onkeydown="GainInputHandler()" onmousedown="GainInputHandler()">0dB</span>
+                            <button class="adj-btn" onclick="increaseGain()">+</button>
                         </div>
                     </div>
-                    <div class="ccExposureSettingContainer">
-                        <span class="exposureControlLabel">SHUTTER</span>
-                        <div class="ccExposureSettingValueContainer">
-                            <a class="expAdjArr" href="#" onclick="decreaseShutter()" id="SHL">&#9664</a>
-                            <span id="shutterSpan" contenteditable="plaintext-only" onkeydown="handleShutterInput()" onmousedown="handleShutterInput()">1/50</span>
-                            <a class="expAdjArr" href="#" onclick="increaseShutter()" id="SHR">&#9654</a>
+                    <div class="exposure-item">
+                        <span class="exposure-label">SHUTTER</span>
+                        <div class="exposure-control">
+                            <button class="adj-btn" onclick="decreaseShutter()">−</button>
+                            <span id="shutterSpan" class="exposure-value" contenteditable="plaintext-only" onkeydown="handleShutterInput()" onmousedown="handleShutterInput()">1/50</span>
+                            <button class="adj-btn" onclick="increaseShutter()">+</button>
                         </div>
                     </div>
-                    <div class="ccExposureSettingContainer">
-                        <span class="exposureControlLabel" onclick="swapWBMode()" title="Click here to swap between WB and Tint" id="WBLabel">BALANCE</span>
-                        <div class="ccExposureSettingValueContainer" id="WBValueContainer">
-                            <a class="expAdjArr" href="#" onclick="decreaseWhiteBalance()" id="WBL">&#9664</a>
-                            <span id="whiteBalanceSpan" contenteditable="plaintext-only" onkeydown="WBInputHandler()" onmousedown="WBInputHandler()">5600K</span>
-                            <a class="expAdjArr" href="#" onclick="increaseWhiteBalance()" id="WBR">&#9654</a>
+                    <div class="exposure-item">
+                        <span class="exposure-label" id="WBLabel" onclick="swapWBMode()">WB</span>
+                        <div class="exposure-control" id="WBValueContainer">
+                            <button class="adj-btn" onclick="decreaseWhiteBalance()">−</button>
+                            <span id="whiteBalanceSpan" class="exposure-value" contenteditable="plaintext-only" onkeydown="WBInputHandler()" onmousedown="WBInputHandler()">5600K</span>
+                            <button class="adj-btn" onclick="increaseWhiteBalance()">+</button>
                         </div>
-                        <div class="ccExposureSettingValueContainer dNone" id="WBTintValueContainer">
-                            <a class="expAdjArr" href="#" onclick="decreaseWhiteBalanceTint()" id="WBTL">&#9664</a>
-                            <span id="whiteBalanceTintSpan" contenteditable="plaintext-only" onkeydown="WBTInputHandler()" onmousedown="WBTInputHandler()">0</span>
-                            <a class="expAdjArr" href="#" onclick="increaseWhiteBalanceTint()" id="WBLR">&#9654</a>
+                        <div class="exposure-control dNone" id="WBTintValueContainer">
+                            <button class="adj-btn" onclick="decreaseWhiteBalanceTint()">−</button>
+                            <span id="whiteBalanceTintSpan" class="exposure-value" contenteditable="plaintext-only" onkeydown="WBTInputHandler()" onmousedown="WBTInputHandler()">0</span>
+                            <button class="adj-btn" onclick="increaseWhiteBalanceTint()">+</button>
                         </div>
-                    </div>
-                    <div class="ccExposureSettingContainer">
-                        <button id="AWBButton" class="circleButton" title="Make the camera do an Auto Whitebalance" onclick="cameras[ci].doAutoWhitebalance()">AW</button>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="flexContainerH" id="cameraControlLensContainer">
-                    <div class="lensSliderContainer">
-                        <span>FOCUS</span>
-                        <input type="range" orient="vertical" max="1" min="0" step="0.001" id="focusRange" oninput="cameras[ci].PUTdata('/lens/focus', {normalised: parseFloat(this.value)})">
-                        <button id="AFButton" class="circleButton" onclick="cameras[ci].doAutoFocus()">AF</button>
+        <!-- Lens Controls -->
+        <section class="card" id="lensCard">
+            <div class="card-header">
+                <span class="card-icon">🔭</span>
+                <h2>Lens</h2>
+                <button class="btn-small" onclick="cameras[ci].doAutoFocus()">AF</button>
+            </div>
+            <div class="card-body">
+                <div class="lens-grid" id="cameraControlLensContainer">
+                    <div class="lens-item">
+                        <span class="lens-label">FOCUS</span>
+                        <input type="range" class="slider-h" min="0" max="1" step="0.001" id="focusRange" oninput="cameras[ci].PUTdata('/lens/focus', {normalised: parseFloat(this.value)})">
                     </div>
-                    <div class="lensSliderContainer">
-                        <span>IRIS</span>
-                        <input type="range" orient="vertical" max="1" min="0" step="0.001" id="irisRange" oninput="cameras[ci].PUTdata('/lens/iris', {normalised: parseFloat(this.value)})">
-                        <span id="apertureStopsLabel">X.X</span>
+                    <div class="lens-item">
+                        <span class="lens-label">IRIS</span>
+                        <input type="range" class="slider-h" min="0" max="1" step="0.001" id="irisRange" oninput="cameras[ci].PUTdata('/lens/iris', {normalised: parseFloat(this.value)})">
+                        <span id="apertureStopsLabel" class="lens-value">f/--</span>
                     </div>
-                    <div class="lensSliderContainer">
-                        <span>ZOOM</span>
-                        <input type="range" orient="vertical" max="1" min="0" step="0.001" id="zoomRange" oninput="cameras[ci].PUTdata('/lens/zoom', {normalised: parseFloat(this.value)})">
-                        <span id="zoomMMLabel">XXmm</span>
+                    <div class="lens-item">
+                        <span class="lens-label">ZOOM</span>
+                        <input type="range" class="slider-h" min="0" max="1" step="0.001" id="zoomRange" oninput="cameras[ci].PUTdata('/lens/zoom', {normalised: parseFloat(this.value)})">
+                        <span id="zoomMMLabel" class="lens-value">--mm</span>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Color Correction (Collapsed by default) -->
+        <section class="card collapsible" id="colorCard">
+            <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="card-icon">🎨</span>
+                <h2>Color</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body collapse-content" id="cameraControlColorCorrectionContainer">
+                <!-- Lift -->
+                <div class="cc-row">
+                    <span class="cc-label">Lift</span>
+                    <div class="cc-values" id="cameraControlColorCorrectionNumbersContainer">
+                        <span contenteditable="plaintext-only" class="CClumaLabel cc-val" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCredLabel cc-val cc-red" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCgreenLabel cc-val cc-green" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCblueLabel cc-val cc-blue" onmousedown="CCInputHandler(0)" onkeydown="CCInputHandler(0)">0.00</span>
+                    </div>
+                    <button class="btn-icon" onclick="resetCC(0)">↺</button>
+                </div>
+                <!-- Gamma -->
+                <div class="cc-row">
+                    <span class="cc-label">Gamma</span>
+                    <div class="cc-values">
+                        <span contenteditable="plaintext-only" class="CClumaLabel cc-val" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCredLabel cc-val cc-red" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCgreenLabel cc-val cc-green" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCblueLabel cc-val cc-blue" onmousedown="CCInputHandler(1)" onkeydown="CCInputHandler(1)">0.00</span>
+                    </div>
+                    <button class="btn-icon" onclick="resetCC(1)">↺</button>
+                </div>
+                <!-- Gain -->
+                <div class="cc-row">
+                    <span class="cc-label">Gain</span>
+                    <div class="cc-values">
+                        <span contenteditable="plaintext-only" class="CClumaLabel cc-val" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCredLabel cc-val cc-red" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCgreenLabel cc-val cc-green" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCblueLabel cc-val cc-blue" onmousedown="CCInputHandler(2)" onkeydown="CCInputHandler(2)">0.00</span>
+                    </div>
+                    <button class="btn-icon" onclick="resetCC(2)">↺</button>
+                </div>
+                <!-- Offset -->
+                <div class="cc-row">
+                    <span class="cc-label">Offset</span>
+                    <div class="cc-values">
+                        <span contenteditable="plaintext-only" class="CClumaLabel cc-val" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCredLabel cc-val cc-red" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCgreenLabel cc-val cc-green" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
+                        <span contenteditable="plaintext-only" class="CCblueLabel cc-val cc-blue" onmousedown="CCInputHandler(3)" onkeydown="CCInputHandler(3)">0.00</span>
+                    </div>
+                    <button class="btn-icon" onclick="resetCC(3)">↺</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings (Collapsed by default) -->
+        <section class="card collapsible" id="settingsCard">
+            <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="card-icon">⚙️</span>
+                <h2>Settings</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body collapse-content" id="cameraControlExpandedBodyContainer">
+                <div class="setting-row">
+                    <label>ISO</label>
+                    <input type="number" id="ISOInput" step="100" onkeydown="ISOInputHandler()" onmousedown="unsavedChanges.push('ISO')">
+                </div>
+                <div class="setting-row">
+                    <label>AE Mode</label>
+                    <select id="AEmodeDropDown" onmousedown="unsavedChanges.push('AutoExposure')">
+                        <option value="Off">Off</option>
+                        <option value="Continuous">Continuous</option>
+                        <option value="OneShot">One-Shot</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label>AE Type</label>
+                    <select id="AEtypeDropDown" onmousedown="unsavedChanges.push('AutoExposure')">
+                        <option value="">None</option>
+                        <option value="Iris">Iris Only</option>
+                        <option value="Shutter">Shutter Only</option>
+                        <option value="Shutter,Iris">Shutter + Iris</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="AEmodeInputHandler()">Apply</button>
                 
+                <div class="divider"></div>
+                
+                <div class="setting-row">
+                    <label>Preset</label>
+                    <select id="presetsDropDown" onmousedown="unsavedChanges.push('presets')" onchange="presetInputHandler()"></select>
+                </div>
+                <button class="btn-secondary" onclick="presetInputHandler()">Load Preset</button>
             </div>
+        </section>
 
-            <div class="flexContainerV" id="cameraControlsContainerExpanded">
-                    <div class="flexContainerH" id="cameraControlExpandedHeadContainer">
-                        <h2 id="cameraName">CAMERA NAME</h2>
-                        <div id="formatDisplay">
-                            <span id="formatCodec">CODEC</span>
-                            <span id="formatResolution">RESOLUTION</span>
-                            <span id="formatFPS">FPS</span>
-                        </div>
-                        <div id="transportControls">
-                            <!-- These will be sticky buttons for loop, single clip, record -->
-                            <button class="circleButton" onclick="loopHandler('Loop')" title="Loop" id="loopButton">&#8635</button>
-                            <button class="circleButton" onclick="loopHandler('Single Clip')" title="Single Clip" id="singleClipButton">S</button>
-                            <button class="circleButton" onclick="cameras[ci].seek(false)" title="Back">&#9204</button>
-                            <button class="circleButton" onclick="cameras[ci].seek(true)" title="Forward">&#9205</button>
-                            <button class="circleButton" onclick="cameras[ci].toggleRecord()" title="Record" style="color: red;">&#9210</button>
-                            <button class="circleButton" onclick="cameras[ci].play()" title="Play">&#9654</button>
-                            <button class="circleButton" onclick="cameras[ci].stop()" title="Stop">&#9209</button>
-                        </div>
-                        <h2 id="timecodeLabel">TIMECODE</h2>
-                    </div>
-
-                    <div class="flexContainerV" id="cameraControlExpandedBodyContainer">
-                        <div class="tableControl">
-                            <h3>Connection</h3>
-                            <table>
-                                <tr>
-                                    <td>Hostname</td>
-                                    <td>
-                                        <input type="text" placeholder=" Camera-Name-Here.local" id="hostnameInput" onclick="hostnameInputHandler()" onkeydown="hostnameInputHandler()" style="text-align: left;">
-                                        <button onclick="initCamera()">Connect</button>
-                                        <input type="checkbox" id="secureCheckbox">
-                                        <span id="secureCheckboxLabel">Use HTTPS</span>
-                                        <span id="connectionErrorSpan"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Send API Call</td>
-                                    <td>
-                                        <input type="radio" id="requestTypeGET" value="GET" name="manualRequestType" checked>
-                                        <label for="requestTypeGET">GET</label>
-                                        <input type="radio" id="requestTypePUT" value="PUT" name="manualRequestType">
-                                        <label for="requestTypePUT">PUT</label>
-
-                                        <input type="text" id="manualRequestEndpointLabel" placeholder="request endpoint">
-                                        <input type="text" id="manualRequestBodyLabel" placeholder="request body">
-                                        
-                                        <button onclick="manualAPICall()">Send API Request</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <p id="manualRequestResponseP">Send manual API requests using the above controls. See <a href="https://documents.blackmagicdesign.com/DeveloperManuals/RESTAPIforBlackmagicCameras.pdf?_v=1696143610000" target="_blank" style="color: #6e6e6e;">documentation</a> for details.</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div class="tableControl">
-                            <h3>Presets</h3>
-                            <table>
-                                <tr>
-                                    <td>Preset Select</td>
-                                    <td>
-                                        <select id="presetsDropDown" onmousedown="unsavedChanges.push('presets')" onchange="presetInputHandler()">
-                                            <!-- Auto-populated by updateUIPresets() -->
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button onclick="presetInputHandler()">Restore from Preset</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div class="tableControl">
-                            <h3>Exposure</h3>
-                            <table>
-                                <tr>
-                                    <td>ISO</td>
-                                    <td><input type="number" id="ISOInput" step="100" onkeydown="ISOInputHandler()" onmousedown="unsavedChanges.push('ISO')"></td>
-                                </tr>
-                                <tr>
-                                    <td>AE Mode</td>
-                                    <td>
-                                        <select id="AEmodeDropDown" onmousedown="unsavedChanges.push('AutoExposure')">
-                                            <option value="Off">Off</option>
-                                            <option value="Continuous">Continuous</option>
-                                            <option value="OneShot">One-Shot</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>AE Type</td>
-                                    <td>
-                                        <select id="AEtypeDropDown" onmousedown="unsavedChanges.push('AutoExposure')">
-                                            <option value="">None</option>
-                                            <option value="Iris">Iris Only</option>
-                                            <option value="Shutter">Shutter Only</option>
-                                            <option value="Shutter,Iris">Shutter + Iris</option>
-                                            <option value="Iris,Shutter">Iris + Shutter</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                            <button style="margin: 2vh 0 0 3.5vw;" onclick="AEmodeInputHandler()">Set AE Mode</button>
-                        </div>
-                        
-                        <div class="tableControl">
-                            <h3>Contrast</h3>
-                            <table>
-                                <tr>
-                                    <td>Pivot</td>
-                                    <td><input type="range" max="1" min="0" step="0.001" id="CCcontrastPivotRange" oninput="cameras[ci].PUTdata('/colorCorrection/contrast', {pivot: parseFloat(this.value)}); unsavedChanges = unsavedChanges.filter((e) => {return !e.includes('CC4')});"></td>
-                                    <td>
-                                        <span id="CCcontrastPivotLabel" contenteditable="plaintext-only" onkeydown="CCInputHandler(4)" onmousedown="CCInputHandler(4)">0</span>
-                                    </td>
-                                    <td rowspan="2">
-                                        <button class="CCResetButton circleButton" onclick="resetCC(4)" title="Reset Contrast">&#10227</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Adjust</td>
-                                    <td><input type="range" max="2" min="0" step="0.001" id="CCcontrastAdjustRange" oninput="cameras[ci].PUTdata('/colorCorrection/contrast', {adjust: parseFloat(this.value)}); unsavedChanges = unsavedChanges.filter((e) => {return !e.includes('CC4')});"></td>
-                                    <td>
-                                        <span id="CCcontrastAdjustLabel" contenteditable="plaintext-only" onkeydown="CCInputHandler(4)" onmousedown="CCInputHandler(4)">0</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div class="tableControl">
-                            <h3>Color</h3>
-                            <table>
-                                <tr>
-                                    <td>Hue</td>
-                                    <td><input type="range" max="1" min="-1" step="0.001" id="CChueRange" oninput="cameras[ci].PUTdata('/colorCorrection/color', {hue: parseFloat(this.value)}); unsavedChanges = unsavedChanges.filter((e) => {return !e.includes('CC5')});"></td>
-                                    <td>
-                                        <span id="CCcolorHueLabel" contenteditable="plaintext-only" onkeydown="CCInputHandler(5)" onmousedown="CCInputHandler(5)">0</span>
-                                    </td>
-                                    <td rowspan="3">
-                                        <button class="CCResetButton circleButton" onclick="resetCC(5)" title="Reset Color">&#10227</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Saturation</td>
-                                    <td><input type="range" max="2" min="0" step="0.001" id="CCsaturationRange" oninput="cameras[ci].PUTdata('/colorCorrection/color', {saturation: parseFloat(this.value)}); unsavedChanges = unsavedChanges.filter((e) => {return !e.includes('CC5')});"></td>
-                                    <td>
-                                        <span id="CCcolorSatLabel" contenteditable="plaintext-only" onkeydown="CCInputHandler(5)" onmousedown="CCInputHandler(5)">0</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Luma Contribution</td>
-                                    <td><input type="range" max="1" min="0" step="0.001" id="CClumaContributionRange" oninput="cameras[ci].PUTdata('/colorCorrection/lumaContribution', {lumaContribution: parseFloat(this.value)}); unsavedChanges = unsavedChanges.filter((e) => {return !e.includes('CC5')});"></td>
-                                    <td>
-                                        <span id="CCcolorLCLabel" contenteditable="plaintext-only" onkeydown="CCInputHandler(5)" onmousedown="CCInputHandler(5)">0</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-            </div>
-            
+        <!-- Camera Selector (hidden by default, for multi-cam) -->
+        <div id="cameraSelectContainer" class="dNone">
+            <span class="cameraSwitchLabel selectedCam"><a href="#" onclick="switchCamera(0)">1</a></span>
+            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(1)">2</a></span>
+            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(2)">3</a></span>
+            <span class="cameraSwitchLabel"><a href="#" onclick="switchCamera(3)">4</a></span>
         </div>
 
-        <!-- Footer Div -->
-        <div class="flexContainerH" id="footerContainer" onclick="this.style.display='none'">
-            <div id="footerLeft">
-                <span class="">(v 1.4.2)</span>
-                <span id="activeElementSpan"></span>
-            </div>
-            <div id="footerLinks">
-                <span><a id="documentationLink" href="#" target="_blank">API Docs</a></span>
-                <span><a id="mediaManagerLink" href="#" target="_blank">Media Manager</a></span>
-                <span><a href="https://dashboard.orbes.space" target="_blank">ORBES Dashboard</a></span>
-                <span><a id="githubLink" href="https://github.com/Orbital-Exploration-Systems/BM-Camera-Control-App" target="_blank">GitHub</a></span>
-            </div>
-        </div>
-    </body>
+    </main>
+
+    <!-- Hidden elements for compatibility -->
+    <div class="dNone">
+        <span id="cameraNumberLabel"></span>
+        <div id="cameraControlHeadContainer"></div>
+        <div id="cameraControlsContainer"></div>
+        <div id="cameraControlsContainerExpanded"></div>
+        <div id="allCamerasContainer"></div>
+        <div id="footerContainer"></div>
+        <span id="documentationLink"></span>
+        <span id="mediaManagerLink"></span>
+        <button id="loopButton"></button>
+        <button id="singleClipButton"></button>
+        <button id="CCHamburgerButton"></button>
+        <input id="CCcontrastPivotRange">
+        <input id="CCcontrastAdjustRange">
+        <input id="CChueRange">
+        <input id="CCsaturationRange">
+        <input id="CClumaContributionRange">
+        <span id="CCcontrastPivotLabel"></span>
+        <span id="CCcontrastAdjustLabel"></span>
+        <span id="CCcolorHueLabel"></span>
+        <span id="CCcolorSatLabel"></span>
+        <span id="CCcolorLCLabel"></span>
+        <input id="manualRequestEndpointLabel">
+        <input id="manualRequestBodyLabel">
+        <input id="requestTypeGET">
+        <input id="requestTypePUT">
+        <span id="manualRequestResponseP"></span>
+        <button id="AWBButton"></button>
+        <button id="AFButton"></button>
+    </div>
+
+</body>
 </html>
