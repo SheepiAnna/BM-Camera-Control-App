@@ -1,4 +1,11 @@
-# BM Camera Control WebUI
+# BM Camera Control App
+
+Blackmagic camera control app for Orbital Exploration Systems.
+
+> **Based on:** [BM-Camera-Control-WebUI](https://github.com/DylanSpeiser/BM-Camera-Control-WebUI) by Dylan Speiser
+
+---
+
 This web app utilizes the [Blackmagic](https://blackmagicdesign.com) Camera Control REST API to control cameras with a vanilla JS web interface. Modeled after the interface of ATEM Software Control, most of the camera's functions that can be controlled by the API are available here.
 
 Note that this is a tech demo, and may not be suitable for production use.
